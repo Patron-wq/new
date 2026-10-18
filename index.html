@@ -1,0 +1,611 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Unknown System — Pet Rift</title>
+<style>
+:root{--bg:#080b16;--panel:#11182a;--line:#293754;--text:#edf3ff;--muted:#9aaaca;--cyan:#63f2d2;--gold:#ffd166;--pink:#ff72c6}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(ellipse at top,#182649,#080b16 60%);color:var(--text);font:15px/1.45 system-ui,sans-serif;min-height:100vh}
+button,input,select{font:inherit}
+button{cursor:pointer;border:1px solid #385071;background:#1b2b47;color:var(--text);border-radius:12px;padding:9px 12px}
+button:hover{border-color:var(--cyan);filter:brightness(1.12)}
+button:disabled{opacity:.35;cursor:not-allowed}
+input,select{background:#0b1120;color:var(--text);border:1px solid var(--line);border-radius:9px;padding:9px;width:100%}
+.wrap{max-width:1200px;margin:auto;padding:20px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px}
+.logo{font-weight:900;letter-spacing:.14em;font-size:13px;color:var(--cyan)}
+.rank{font-size:12px;color:var(--muted);border:1px solid var(--line);padding:6px 10px;border-radius:99px}
+.hero{display:grid;grid-template-columns:1.25fr .75fr;gap:16px}
+.panel{background:linear-gradient(145deg,#151e33ee,#0e1424ee);border:1px solid var(--line);border-radius:20px;padding:18px;box-shadow:0 14px 40px #0003}
+.scene{min-height:270px;position:relative;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.scene:before{content:"";position:absolute;width:310px;height:310px;border-radius:50%;background:radial-gradient(circle,#5af4d62c,transparent 68%);animation:pulse 3s infinite}
+.scene>*{position:relative}
+.eyebrow{color:var(--muted);font-size:11px;letter-spacing:.18em;text-transform:uppercase}
+.core{font-size:86px;line-height:1.2;filter:drop-shadow(0 0 24px #63f2d277);cursor:pointer;user-select:none}
+.hint{color:var(--muted);font-size:12px}
+.mainbtn{margin-top:12px;background:linear-gradient(120deg,#47d9c1,#7b9bff);color:#06131e;border:0;font-weight:900;padding:12px 22px}
+.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:14px}
+.stat{background:#0b1120;border:1px solid #222f4b;border-radius:13px;padding:12px}
+.stat span{display:block;color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.1em}
+.stat strong{font-size:22px;display:block;margin-top:3px}
+.side h2,.sectionhead h2{margin:0;font-size:17px}
+.side p{color:var(--muted);margin:7px 0 15px;font-size:13px}
+.meter{height:8px;background:#26324c;border-radius:99px;overflow:hidden;margin:8px 0 14px}
+.meter div{height:100%;width:0;background:linear-gradient(90deg,var(--cyan),#829cff);transition:width .2s}
+.mission{padding:11px;background:#0b1120;border-radius:12px;margin:9px 0;border:1px solid #26324c}
+.mission strong{display:block;font-size:13px}
+.mission small{color:var(--muted)}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin:18px 0 12px}
+.tabs button.active{background:var(--cyan);color:#07131b;border-color:var(--cyan);font-weight:800}
+.sectionhead{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:13px}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.upgrade{background:#0c1323;border:1px solid #293754;border-radius:15px;padding:14px;display:flex;flex-direction:column;min-height:165px}
+.upgrade .emoji{font-size:27px}
+.upgrade h3{font-size:14px;margin:7px 0 4px}
+.upgrade p{color:var(--muted);font-size:12px;margin:0 0 12px;flex:1}
+.upgrade button{width:100%;font-size:12px}
+.owned{color:var(--cyan);font-size:11px;margin:8px 0}
+.bottom{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px}
+.log{height:145px;overflow:auto;color:var(--muted);font-size:12px;display:flex;flex-direction:column-reverse;gap:7px}
+.log div{border-left:2px solid #385071;padding-left:9px}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#e6fff9;color:#081a20;padding:11px 18px;border-radius:99px;font-weight:800;box-shadow:0 8px 30px #0008;opacity:0;pointer-events:none;transition:.25s;z-index:20}
+.toast.show{opacity:1}
+.footer{color:#667594;text-align:center;font-size:11px;padding:20px}
+.petgrid,.egggrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.petcard,.eggcard{background:#0b1120;border:1px solid #293754;border-radius:15px;padding:13px;min-width:0}
+.petcard{text-align:center}
+.peticon{font-size:36px}
+.petname{font-weight:850;margin:5px 0}
+.rarity{font-size:10px;letter-spacing:.1em;text-transform:uppercase;font-weight:900}
+.common{color:#b9c6d9}.uncommon{color:#65f2b5}.rare{color:#6cb5ff}.epic{color:#d29aff}.legendary{color:#ffd166}.mythic{color:#ff72c6}
+.secret{color:#fff;text-shadow:0 0 10px #ff72c6}
+.small{font-size:12px;color:var(--muted)}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.row>*{flex:1}
+.ownergrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.ownerfield label{display:block;font-size:11px;color:var(--muted);margin-bottom:4px}
+.ownerfield{min-width:0}
+.hidden{display:none!important}
+.tag{display:inline-block;border:1px solid #354666;border-radius:99px;padding:3px 8px;font-size:10px;color:var(--muted)}
+.hatch{animation:hatch .65s ease-in-out}
+@keyframes hatch{0%{transform:scale(.65) rotate(-8deg);filter:brightness(.5)}60%{transform:scale(1.22) rotate(5deg);filter:brightness(1.8)}100%{transform:scale(1);filter:brightness(1)}}
+@keyframes pulse{50%{transform:scale(1.12);opacity:.7}}
+@media(max-width:760px){.wrap{padding:12px}.hero,.bottom{grid-template-columns:1fr}.grid,.petgrid,.egggrid{grid-template-columns:repeat(2,1fr)}.scene{min-height:260px}.core{font-size:75px}.ownergrid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:420px){.grid,.petgrid,.egggrid{grid-template-columns:1fr 1fr}.panel{padding:13px}.upgrade{padding:11px}.ownergrid{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="top">
+<div>
+<div class="logo">✦ UNKNOWN SYSTEM // PET RIFT</div>
+<div style="font-size:12px;color:var(--muted);margin-top:4px">Hatch anomalies. Collect power. Rewrite reality.</div>
+</div>
+<div class="rank" id="rank">RANK 0 · ROOKIE</div>
+</header>
+
+<main class="hero">
+<section class="panel">
+<div class="scene">
+<div class="eyebrow" id="stageLabel">SIGNAL DETECTED</div>
+<div class="core" id="core" title="Click to collect">✧</div>
+<div style="font-size:23px;font-weight:900" id="coreName">The Spark</div>
+<div class="hint" id="coreHint">Click the spark to collect energy.</div>
+<button class="mainbtn" id="collect">HARVEST ✦</button>
+</div>
+<div class="stats">
+<div class="stat"><span>Energy</span><strong id="energy">0</strong></div>
+<div class="stat"><span>Per second</span><strong id="rate">0</strong></div>
+<div class="stat"><span>Click power</span><strong id="power">1</strong></div>
+<div class="stat"><span>Pets discovered</span><strong id="petCount">0 / 31</strong></div>
+</div>
+</section>
+
+<aside class="panel side">
+<h2>Expedition report</h2>
+<p>Your pets are strange. Your numbers are stranger.</p>
+<div class="eyebrow">NEXT BREAKTHROUGH</div>
+<strong id="nextTitle">Wake the machine</strong>
+<div class="meter"><div id="progress"></div></div>
+<div class="hint" id="progressText">0 / 100 lifetime energy</div>
+<div class="mission">
+<strong>📡 Daily transmission</strong>
+<small id="missionText">Collect 1000 energy</small>
+<div class="meter"><div id="missionBar"></div></div>
+<button id="claim" disabled>Claim +500 energy</button>
+</div>
+<div class="mission">
+<strong>🐾 Active squad</strong>
+<small id="squadText">No pets equipped yet.</small>
+<div class="meter"><div id="petBoostBar"></div></div>
+</div>
+<button id="prestige" style="width:100%;margin-top:5px" disabled>↻ Reboot reality · Need 10K total</button>
+<p class="hint" style="margin-top:10px">Reboot resets upgrades and energy, but grants permanent multipliers. Pets stay with you.</p>
+</aside>
+</main>
+
+<nav class="tabs" id="tabs">
+<button class="active" data-tab="all">All upgrades</button>
+<button data-tab="click">Click gear</button>
+<button data-tab="idle">Auto machines</button>
+<button data-tab="lab">Research lab</button>
+<button data-tab="eggs">🥚 Egg Lab</button>
+<button data-tab="pets">🐾 Pet collection</button>
+<button data-tab="owner">⚙ Owner panel</button>
+</nav>
+
+<section class="panel" id="upgradeSection">
+<div class="sectionhead">
+<h2 id="upgradeTitle">Upgrade your operation</h2>
+<span class="hint" id="upgradeCount">0 owned</span>
+</div>
+<div class="grid" id="upgrades"></div>
+</section>
+
+<section class="panel hidden" id="eggSection">
+<div class="sectionhead">
+<h2>🥚 Rift Egg Lab</h2>
+<span class="hint">Every egg has 5 possible pets</span>
+</div>
+<p class="small">Hatching is random. Higher tiers cost more but contain stronger companions. Equip up to 3 pets; duplicate discoveries increase your collection count.</p>
+<div class="egggrid" id="eggs"></div>
+<div class="mission">
+<strong id="hatchResultTitle">Awaiting a hatch…</strong>
+<div class="row">
+<div class="peticon" id="hatchResultIcon">🥚</div>
+<div id="hatchResultText" class="small">Choose an egg to reveal a pet.</div>
+</div>
+</div>
+</section>
+
+<section class="panel hidden" id="petSection">
+<div class="sectionhead">
+<h2>🐾 Pet collection</h2>
+<span class="hint" id="petSummary">0 discovered</span>
+</div>
+<div class="row" style="margin-bottom:12px">
+<button id="equipBest">Equip best squad</button>
+<button id="unequipAll">Unequip all</button>
+</div>
+<div class="petgrid" id="pets"></div>
+</section>
+
+<section class="panel hidden" id="ownerSection">
+<div class="sectionhead">
+<h2>⚙ Owner control room</h2>
+<span class="tag">LOCAL SANDBOX</span>
+</div>
+<p class="small">This owner panel is a built-in game cheat menu. It only changes this browser's local save; it is not a secure server admin system.</p>
+<div class="ownergrid">
+<div class="ownerfield"><label>Give energy</label><input id="owEnergy" type="number" value="100000" min="0"></div>
+<div class="ownerfield"><label>Set total energy</label><input id="owTotal" type="number" value="100000" min="0"></div>
+<div class="ownerfield"><label>Production multiplier</label><input id="owMult" type="number" value="10" min="0.01" step="any"></div>
+<div class="ownerfield"><label>Click power multiplier</label><input id="owClick" type="number" value="10" min="0.01" step="any"></div>
+<div class="ownerfield"><label>Set prestige count</label><input id="owPrestige" type="number" value="5" min="0"></div>
+<div class="ownerfield"><label>Egg to unlock</label>
+<select id="owEgg">
+<option value="0">1 · Spark Egg</option><option value="1">2 · Moss Egg</option><option value="2">3 · Tide Egg</option><option value="3">4 · Ember Egg</option><option value="4">5 · Galaxy Egg</option><option value="5">6 · Rift Egg</option>
+</select>
+</div>
+<div class="ownerfield"><label>Pet to spawn</label><select id="owPet"></select></div>
+<div class="ownerfield"><label>Custom bonus multiplier</label><input id="owPetMult" type="number" value="100" min="1" step="any"></div>
+<div class="ownerfield"><label>Secret pet option</label>
+<select id="owSecret"><option value="off">Secret pet disabled</option><option value="on">Enable ×10,000 pet</option></select>
+</div>
+</div>
+<div class="row" style="margin-top:12px">
+<button id="owGive">Give energy</button>
+<button id="owSetTotal">Set lifetime total</button>
+<button id="owSetMult">Apply multipliers</button>
+<button id="owPrestigeBtn">Set prestige</button>
+<button id="owUnlock">Unlock selected egg</button>
+<button id="owSpawn">Spawn selected pet</button>
+<button id="owSecretBtn">Toggle secret pet</button>
+<button id="owUnlockAll">Unlock all eggs</button>
+<button id="owMax">Max all upgrades</button>
+<button id="owReset">Reset game save</button>
+</div>
+<div class="mission">
+<strong>Owner quick actions</strong>
+<div class="row">
+<button id="owEquipSecret">Spawn + equip secret pet</button>
+<button id="owAllPets">Discover all pets</button>
+<button id="owFreeHatch">Toggle free hatches</button>
+</div>
+<small id="ownerStatus">Ready.</small>
+</div>
+</section>
+
+<div class="bottom">
+<section class="panel">
+<div class="sectionhead"><h2>Milestones</h2><span class="hint">Keep pushing</span></div>
+<div id="milestones"></div>
+</section>
+<section class="panel">
+<div class="sectionhead"><h2>Activity feed</h2><button id="save" style="padding:6px 10px;font-size:12px">Save now</button></div>
+<div class="log" id="log"></div>
+</section>
+</div>
+
+<div class="footer">Progress saves automatically in this browser · One HTML file · No account or internet required.</div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+"use strict";
+(()=>{
+const $=id=>document.getElementById(id);
+
+const defs=[
+{id:"gloves",name:"Magnetic Gloves",emoji:"🧤",type:"click",base:15,growth:1.55,desc:"+1 base energy per click.",click:1},
+{id:"lens",name:"Prism Lens",emoji:"🔮",type:"click",base:90,growth:1.7,desc:"+6 base click power.",click:6},
+{id:"drone",name:"Collector Drone",emoji:"🛸",type:"idle",base:35,growth:1.48,desc:"Gathers energy automatically.",rate:.7},
+{id:"bot",name:"Scrap Bot",emoji:"🤖",type:"idle",base:180,growth:1.52,desc:"Turns scrap into steady energy.",rate:3.8},
+{id:"reactor",name:"Mini Reactor",emoji:"⚛️",type:"idle",base:850,growth:1.58,desc:"A suspiciously efficient power source.",rate:19},
+{id:"portal",name:"Pocket Portal",emoji:"🌀",type:"idle",base:4800,growth:1.62,desc:"Imports energy from elsewhere.",rate:105},
+{id:"algorithm",name:"Lucky Algorithm",emoji:"🧠",type:"lab",base:250,growth:1.8,desc:"All production +20%.",mult:.2},
+{id:"crystal",name:"Prismatic Core",emoji:"💎",type:"lab",base:1600,growth:1.85,desc:"All production +75%.",mult:.75},
+{id:"quantum",name:"Quantum Theory",emoji:"🧬",type:"lab",base:12000,growth:1.95,desc:"All production ×2.",factor:2}
+];
+
+const eggs=[
+{id:"spark",name:"Spark Egg",emoji:"🥚",cost:250,unlock:0,desc:"A tiny pulse of life.",pets:[
+["Pip the Comet","☄️","Common",1.05],["Buttonbyte","🤖","Common",1.1],["Mallow Orb","🫧","Uncommon",1.2],["Prism Finch","🐦","Rare",1.45],["Sunseed","🌞","Epic",1.8]]},
+{id:"moss",name:"Moss Egg",emoji:"🌿",cost:2500,unlock:500,desc:"Something stirs in the overgrowth.",pets:[
+["Mossbit","🐸","Common",1.2],["Fernfang","🦎","Uncommon",1.35],["Bramble Bun","🐰","Rare",1.65],["Elderbloom","🌺","Epic",2.1],["Verdant Warden","🦌","Legendary",3]]},
+{id:"tide",name:"Tide Egg",emoji:"🌊",cost:25000,unlock:5000,desc:"A deep-sea signal answers.",pets:[
+["Blooplet","🐟","Common",1.4],["Coral Cub","🦀","Uncommon",1.65],["Moon Jelly","🪼","Rare",2],["Abyssal Drake","🐉","Epic",2.8],["Leviathanling","🐳","Legendary",4]]},
+{id:"ember",name:"Ember Egg",emoji:"🔥",cost:250000,unlock:50000,desc:"Warmth from an ancient star.",pets:[
+["Cinderkit","🐱","Uncommon",1.8],["Coalwing","🦇","Rare",2.3],["Blazehorn","🐏","Epic",3.2],["Solar Phoenix","🦅","Legendary",5],["Inferno Monarch","👑","Mythic",7]]},
+{id:"galaxy",name:"Galaxy Egg",emoji:"🌌",cost:2500000,unlock:500000,desc:"A whole constellation in a shell.",pets:[
+["Nebulamb","🐑","Rare",2.8],["Orbit Otter","🦦","Epic",3.8],["Quasar Fox","🦊","Legendary",5.5],["Pulsar Knight","🛡️","Mythic",8],["Celestial Hydra","🐲","Mythic",12]]},
+{id:"rift",name:"Rift Egg",emoji:"🌀",cost:25000000,unlock:5000000,desc:"The egg that reality tried to hide.",pets:[
+["Glitchling","👾","Epic",4],["Null Panther","🐈‍⬛","Legendary",7],["Void Seraph","😈","Mythic",11],["Chrono Emperor","⏳","Mythic",18],["The Unwritten","🌠","Mythic",30]]}
+];
+
+const secretPet={id:"secret-architect",name:"THE NULL ARCHITECT",emoji:"👁️‍🗨️",rarity:"SECRET",bonus:10000,egg:"secret"};
+const allPets=eggs.flatMap((e,ei)=>e.pets.map((p,pi)=>({id:e.id+"-"+pi,name:p[0],emoji:p[1],rarity:p[2],bonus:p[3],egg:e.id,eggIndex:ei}))).concat([secretPet]);
+
+const fresh=()=>({energy:0,total:0,clicks:0,prestige:0,owned:{},claimed:false,mission:0,pets:{},equipped:[],unlockedEggs:[0],ownerMult:1,ownerClick:1,freeHatch:false,secretEnabled:false});
+let s=fresh(),tab="all",last=Date.now(),toastTimer;
+
+try{
+const old=JSON.parse(localStorage.getItem("unknown-system-save"));
+if(old&&typeof old==="object"&&old.owned)s={...fresh(),...old,owned:old.owned||{},pets:old.pets||{},equipped:old.equipped||[],unlockedEggs:old.unlockedEggs||[0]};
+}catch(e){}
+
+function fmt(n){
+if(!Number.isFinite(n))return"∞";
+if(Math.abs(n)<1000)return n.toLocaleString("en-US",{maximumFractionDigits:n<10?2:0});
+const u=["K","M","B","T","Qa","Qi","Sx","Sp","Oc","No","Dc","Ud","Dd"];
+let i=-1;
+while(n>=1000&&i<u.length-1){n/=1000;i++}
+return n.toFixed(n<10?2:n<100?1:0)+u[i]
+}
+function count(id){return s.owned[id]||0}
+function cost(d){return Math.floor(d.base*Math.pow(d.growth,count(d.id)))}
+function petCopies(id){return s.pets[id]||0}
+function petData(id){return allPets.find(p=>p.id===id)}
+function equippedPets(){return s.equipped.map(petData).filter(Boolean)}
+function petMultiplier(){return equippedPets().reduce((m,p)=>m*p.bonus,1)}
+function mult(){
+let m=(1+s.prestige*.5)*s.ownerMult*petMultiplier();
+for(const d of defs){
+if(d.mult)m+=count(d.id)*d.mult*s.ownerMult*petMultiplier();
+if(d.factor)m*=Math.pow(d.factor,count(d.id))
+}
+return m
+}
+function power(){return (1+defs.filter(d=>d.type==="click").reduce((a,d)=>a+count(d.id)*(d.click||0),0))*mult()*s.ownerClick}
+function rate(){return defs.reduce((a,d)=>a+count(d.id)*(d.rate||0),0)*mult()}
+function add(n){if(!Number.isFinite(n)||n<=0)return;s.energy+=n;s.total+=n;s.mission+=n}
+function note(t){
+const el=document.createElement("div");
+el.textContent=t;
+$("log").prepend(el);
+while($("log").children.length>35)$("log").lastChild.remove()
+}
+function toast(t){
+$("toast").textContent=t;
+$("toast").classList.add("show");
+clearTimeout(toastTimer);
+toastTimer=setTimeout(()=>$("toast").classList.remove("show"),1800)
+}
+function collect(){
+const p=power();
+add(p);
+s.clicks++;
+if(s.clicks%20===0)note("Your fingers are basically industrial equipment.");
+render();
+if(s.total>=100&&s.total-p<100)toast("First breakthrough unlocked!")
+}
+function buy(id){
+const d=defs.find(x=>x.id===id);
+if(!d)return;
+const c=cost(d);
+if(s.energy<c)return;
+s.energy-=c;
+s.owned[id]=count(id)+1;
+note("Purchased: "+d.name+".");
+render()
+}
+
+function renderUpgrades(){
+const list=defs.filter(d=>tab==="all"||d.type===tab);
+$("upgrades").innerHTML="";
+list.forEach(d=>{
+const c=cost(d),owned=count(d.id),el=document.createElement("article");
+el.className="upgrade";
+el.innerHTML=`<div class="emoji">${d.emoji}</div><h3>${d.name}</h3><p>${d.desc}</p><div class="owned">OWNED: ${owned}</div><button ${s.energy<c?"disabled":""} data-buy="${d.id}">Upgrade · ✦ ${fmt(c)}</button>`;
+$("upgrades").appendChild(el)
+});
+$("upgradeCount").textContent=defs.reduce((a,d)=>a+count(d.id),0)+" owned";
+$("upgrades").querySelectorAll("[data-buy]").forEach(b=>b.addEventListener("click",()=>buy(b.dataset.buy)));
+$("upgradeTitle").textContent=({all:"Upgrade your operation",click:"Make every click count",idle:"Machines that work for you",lab:"Break the rules of energy"})[tab]||"Upgrade your operation"
+}
+
+function hatch(i){
+const e=eggs[i];
+if(!e)return;
+if(!s.unlockedEggs.includes(i)){toast("Egg locked — reach "+fmt(e.unlock)+" lifetime energy.");return}
+if(!s.freeHatch&&s.energy<e.cost){toast("Not enough energy for this egg.");return}
+if(!s.freeHatch)s.energy-=e.cost;
+const weights=e.pets.map((p,j)=>j===0?42:j===1?29:j===2?17:j===3?9:3);
+let r=Math.random()*weights.reduce((a,b)=>a+b,0),pi=0;
+for(;pi<weights.length-1;pi++){r-=weights[pi];if(r<0)break}
+const p=allPets.find(x=>x.id===e.id+"-"+pi);
+s.pets[p.id]=(s.pets[p.id]||0)+1;
+const result=$("hatchResultIcon");
+result.textContent=p.emoji;
+result.classList.remove("hatch");
+void result.offsetWidth;
+result.classList.add("hatch");
+$("hatchResultTitle").textContent="HATCH SUCCESS: "+p.name;
+$("hatchResultText").innerHTML=`<span class="${p.rarity.toLowerCase()}">${p.rarity}</span> · ×${fmt(p.bonus)} equipped bonus<br>Copies owned: ${s.pets[p.id]}`;
+note("Hatched "+p.name+" from "+e.name+".");
+if(!s.equipped.includes(p.id)&&s.equipped.length<3){s.equipped.push(p.id);toast(p.name+" hatched and auto-equipped!")}
+else toast(p.name+" hatched!");
+checkEggUnlocks();
+render()
+}
+
+function checkEggUnlocks(){
+eggs.forEach((e,i)=>{
+if(s.total>=e.unlock&&!s.unlockedEggs.includes(i)){
+s.unlockedEggs.push(i);
+note("Egg unlocked: "+e.name+".");
+toast(e.name+" unlocked!")
+}
+})
+}
+
+function renderEggs(){
+$("eggs").innerHTML="";
+eggs.forEach((e,i)=>{
+const unlocked=s.unlockedEggs.includes(i),el=document.createElement("article");
+el.className="eggcard";
+el.innerHTML=`<div class="peticon">${e.emoji}</div><h3>${e.name}</h3><p class="small">${e.desc}</p><p class="small">Contains 5 unique pets</p><div class="owned">Cost: ✦ ${s.freeHatch?"FREE":fmt(e.cost)}</div><div class="small">${unlocked?"UNLOCKED":"Unlock at "+fmt(e.unlock)+" total energy"}</div><button data-hatch="${i}" ${!unlocked||(!s.freeHatch&&s.energy<e.cost)?"disabled":""}>Hatch egg</button>`;
+$("eggs").appendChild(el)
+});
+$("eggs").querySelectorAll("[data-hatch]").forEach(b=>b.addEventListener("click",()=>hatch(Number(b.dataset.hatch))))
+}
+
+function toggleEquip(id){
+if(!petCopies(id)){toast("You haven't discovered this pet yet.");return}
+if(s.equipped.includes(id)){s.equipped=s.equipped.filter(x=>x!==id)}
+else{
+if(s.equipped.length>=3){toast("Squad full — unequip a pet first.");return}
+s.equipped.push(id)
+}
+render()
+}
+
+function renderPets(){
+$("pets").innerHTML="";
+allPets.forEach(p=>{
+const n=petCopies(p.id),eq=s.equipped.includes(p.id),el=document.createElement("article");
+el.className="petcard";
+el.innerHTML=`<div class="peticon">${n?p.emoji:"❔"}</div><div class="petname">${n?p.name:"Undiscovered"}</div><div class="rarity ${p.rarity.toLowerCase()}">${n?p.rarity:"???"}</div><div class="small">${n?"Bonus ×"+fmt(p.bonus):"Hatch eggs to discover"}</div><div class="small">Copies: ${n}</div><button data-equip="${p.id}" ${!n?"disabled":""}>${eq?"Unequip":"Equip"}${eq?" ✓":""}</button>`;
+$("pets").appendChild(el)
+});
+$("pets").querySelectorAll("[data-equip]").forEach(b=>b.addEventListener("click",()=>toggleEquip(b.dataset.equip)));
+$("petSummary").textContent=allPets.filter(p=>petCopies(p.id)>0).length+" / "+allPets.length+" discovered"
+}
+
+function render(){
+$("energy").textContent=fmt(s.energy);
+$("rate").textContent=fmt(rate());
+$("power").textContent=fmt(power());
+$("petCount").textContent=allPets.filter(p=>petCopies(p.id)>0).length+" / "+allPets.length;
+const tier=s.total>=1e7?4:s.total>=1e5?3:s.total>=1000?2:s.total>=100?1:0;
+const tiers=[
+["The Spark","✧","SIGNAL DETECTED","Click the spark to collect energy."],
+["The Workshop","✦","SIGNAL STABILIZED","Your operation is growing."],
+["The Rift","◈","ANOMALY DETECTED","The readings make no sense."],
+["The Nebula","✺","COSMIC OUTPUT","Production is becoming alarming."],
+["The Beyond","☼","REALITY UNSTABLE","There may not be a number big enough."]
+];
+$("coreName").textContent=tiers[tier][0];
+$("core").textContent=tiers[tier][1];
+$("stageLabel").textContent=tiers[tier][2];
+$("coreHint").textContent=tiers[tier][3];
+const goal=[100,1000,1e5,1e7,1e9][tier],prev=[0,100,1000,1e5,1e7][tier];
+$("nextTitle").textContent=tier===4?"Reach the impossible":"Unlock "+tiers[tier+1][0];
+$("progress").style.width=Math.min(100,Math.max(0,(s.total-prev)/(goal-prev)*100))+"%";
+$("progressText").textContent=fmt(s.total)+" / "+fmt(goal)+" lifetime energy";
+$("missionText").textContent="Collect 1K energy ("+fmt(Math.min(s.mission,1000))+"/1K)";
+$("missionBar").style.width=Math.min(100,s.mission/10)+"%";
+$("claim").disabled=s.mission<1000||s.claimed;
+$("claim").textContent=s.claimed?"Claimed ✓":"Claim +500 energy";
+$("prestige").disabled=s.total<10000;
+const ep=equippedPets();
+$("squadText").textContent=ep.length?ep.map(p=>p.emoji+" "+p.name).join(" · ")+" · ×"+fmt(petMultiplier()):"No pets equipped yet.";
+$("petBoostBar").style.width=Math.min(100,ep.length/3*100)+"%";
+const ms=[["First spark",100],["Automated",1000],["Reality bender",10000],["Millionaire",1e6],["Cosmic tycoon",1e9]];
+$("milestones").innerHTML=ms.map(([n,v])=>`<div class="mission" style="display:flex;justify-content:space-between;align-items:center;gap:8px"><div><strong>${s.total>=v?"✓ ":""}${n}</strong><small>${fmt(v)} lifetime energy</small></div><span style="color:${s.total>=v?"var(--cyan)":"var(--muted)"}">${s.total>=v?"DONE":"LOCKED"}</span></div>`).join("");
+$("rank").textContent="RANK "+s.prestige+" · "+(s.prestige?"REALITY ENGINEER":"ROOKIE");
+renderUpgrades();
+renderEggs();
+renderPets();
+$("owSecret").value=s.secretEnabled?"on":"off"
+}
+
+function save(show=true){
+try{localStorage.setItem("unknown-system-save",JSON.stringify(s));if(show)toast("Progress saved.")}
+catch(e){if(show)toast("Browser storage unavailable.")}
+}
+function saveSilent(){save(false)}
+
+function showTab(t){
+tab=t;
+["upgradeSection","eggSection","petSection","ownerSection"].forEach(id=>$(id).classList.add("hidden"));
+if(["all","click","idle","lab"].includes(t))$("upgradeSection").classList.remove("hidden");
+if(t==="eggs")$("eggSection").classList.remove("hidden");
+if(t==="pets")$("petSection").classList.remove("hidden");
+if(t==="owner")$("ownerSection").classList.remove("hidden");
+$("tabs").querySelectorAll("button").forEach(b=>b.classList.toggle("active",b.dataset.tab===t));
+renderUpgrades()
+}
+
+$("collect").addEventListener("click",collect);
+$("core").addEventListener("click",collect);
+$("tabs").querySelectorAll("button").forEach(b=>b.addEventListener("click",()=>showTab(b.dataset.tab)));
+
+$("claim").addEventListener("click",()=>{
+if(s.mission>=1000&&!s.claimed){
+s.claimed=true;
+add(500);
+note("Transmission decoded. Bonus energy received.");
+render();
+toast("Mission complete! +500")
+}
+});
+
+$("prestige").addEventListener("click",()=>{
+if(s.total<10000)return;
+if(!confirm("Reboot reality? Energy and upgrades reset, but you gain a permanent +50% multiplier."))return;
+const p=s.prestige+1,pets=s.pets,equipped=s.equipped,unlocked=s.unlockedEggs;
+s=fresh();
+s.prestige=p;
+s.pets=pets;
+s.equipped=equipped;
+s.unlockedEggs=unlocked;
+note("Reality rebooted. Permanent multiplier increased.");
+saveSilent();
+render();
+toast("Reality rebooted · ×"+(1+p*.5))
+});
+
+$("save").addEventListener("click",()=>save(true));
+$("equipBest").addEventListener("click",()=>{
+s.equipped=allPets.filter(p=>petCopies(p.id)>0).sort((a,b)=>b.bonus-a.bonus).slice(0,3).map(p=>p.id);
+render();
+toast("Best squad equipped.")
+});
+$("unequipAll").addEventListener("click",()=>{s.equipped=[];render()});
+
+function ownerMsg(t){$("ownerStatus").textContent=t;note("OWNER: "+t);toast(t)}
+
+$("owGive").onclick=()=>{
+const n=Math.max(0,Number($("owEnergy").value)||0);
+add(n);render();ownerMsg("Added "+fmt(n)+" energy.")
+};
+$("owSetTotal").onclick=()=>{
+s.total=Math.max(s.total,Math.max(0,Number($("owTotal").value)||0));
+render();ownerMsg("Lifetime total updated.")
+};
+$("owSetMult").onclick=()=>{
+s.ownerMult=Math.max(.01,Number($("owMult").value)||1);
+s.ownerClick=Math.max(.01,Number($("owClick").value)||1);
+render();ownerMsg("Custom multipliers applied.")
+};
+$("owPrestigeBtn").onclick=()=>{
+s.prestige=Math.max(0,Math.floor(Number($("owPrestige").value)||0));
+render();ownerMsg("Prestige set to "+s.prestige+".")
+};
+$("owUnlock").onclick=()=>{
+const i=Number($("owEgg").value);
+if(!s.unlockedEggs.includes(i))s.unlockedEggs.push(i);
+render();ownerMsg(eggs[i].name+" unlocked.")
+};
+$("owSpawn").onclick=()=>{
+const id=$("owPet").value,p=petData(id);
+if(!p)return;
+s.pets[id]=(s.pets[id]||0)+1;
+if(p.id===secretPet.id)s.secretEnabled=true;
+render();ownerMsg("Spawned "+p.name+".")
+};
+$("owSecretBtn").onclick=()=>{
+s.secretEnabled=$("owSecret").value==="on";
+if(s.secretEnabled){
+s.pets[secretPet.id]=Math.max(1,petCopies(secretPet.id));
+if(!s.equipped.includes(secretPet.id)){
+if(s.equipped.length>=3)s.equipped.pop();
+s.equipped.push(secretPet.id)
+}
+ownerMsg("Secret pet enabled: ×10,000 bonus active if equipped.")
+}else{
+s.equipped=s.equipped.filter(id=>id!==secretPet.id);
+ownerMsg("Secret pet disabled and unequipped.")
+}
+render()
+};
+$("owUnlockAll").onclick=()=>{
+s.unlockedEggs=eggs.map((e,i)=>i);
+render();ownerMsg("All six eggs unlocked.")
+};
+$("owMax").onclick=()=>{
+defs.forEach(d=>s.owned[d.id]=Math.max(count(d.id),25));
+render();ownerMsg("All upgrades set to at least 25.")
+};
+$("owReset").onclick=()=>{
+if(confirm("Erase this game's local save and restart?")){
+s=fresh();saveSilent();render();ownerMsg("Game save reset.")
+}
+};
+$("owEquipSecret").onclick=()=>{
+s.secretEnabled=true;
+s.pets[secretPet.id]=Math.max(1,petCopies(secretPet.id));
+s.equipped=[secretPet.id,...s.equipped.filter(id=>id!==secretPet.id)].slice(0,3);
+render();ownerMsg("THE NULL ARCHITECT equipped — ×10,000 bonus.")
+};
+$("owAllPets").onclick=()=>{
+allPets.forEach(p=>s.pets[p.id]=Math.max(1,petCopies(p.id)));
+render();ownerMsg("All pets discovered.")
+};
+$("owFreeHatch").onclick=()=>{
+s.freeHatch=!s.freeHatch;
+render();ownerMsg("Free hatches "+(s.freeHatch?"enabled":"disabled")+".")
+};
+$("owPetMult").addEventListener("change",()=>{
+const p=petData($("owPet").value);
+if(p){
+p.bonus=Math.max(1,Number($("owPetMult").value)||1);
+ownerMsg("Selected pet bonus changed for this session.")
+}
+});
+
+$("owPet").innerHTML=allPets.map(p=>`<option value="${p.id}">${p.emoji} ${p.name}</option>`).join("");
+
+// Keep the secret pet's bonus at exactly 10,000 regardless of the custom pet field.
+secretPet.bonus=10000;
+
+setInterval(()=>{
+const now=Date.now(),dt=Math.min((now-last)/1000,5);
+last=now;
+if(dt>0){add(rate()*dt);checkEggUnlocks();render()}
+},500);
+
+setInterval(saveSilent,5000);
+window.addEventListener("beforeunload",saveSilent);
+
+note("A mysterious signal has found you.");
+note("Tip: hatch pets to multiply your energy gains.");
+render();
+})();
+</script>
+</body>
+</html>
